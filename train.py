@@ -3,7 +3,7 @@ import logging
 import os
 from scripts import YAML
 
-# Set the logging config to print info
+# Set the logging config to print info\
 logging.basicConfig(
     format='%(asctime)s %(levelname)-5s [%(filename)s:%(lineno)d] %(message)s',
     datefmt='%H:%M:%S',
@@ -11,11 +11,17 @@ logging.basicConfig(
 
 
 def set_dir(folder_name):
+    if not folder_name:
+        logging.error('No ID')
+        exit()
+
     if not os.path.exists(folder_name):
         os.makedirs(folder_name)
         logging.debug('create new folder')
     else:
         logging.debug('id existed')
+
+
 
 # Set argparse
 def set_argparse():
@@ -32,5 +38,5 @@ def set_argparse():
 
 
 args = set_argparse()
-YAML.read()
-# set_dir(args.id)
+set_dir(args.id)
+

@@ -1,4 +1,5 @@
 import yaml
+import logging
 
 
 def gen():
@@ -15,10 +16,13 @@ def gen():
 def read():
     file = open('../config.yaml', 'r')
     data = yaml.load(file, Loader=yaml.SafeLoader)
-    print(data)
+    logging.info('read complete.')
+    return data
 
 
-def get_yaml(folder_name=''):
+def get_yaml(args, folder_name=''):
+    if args.train:
+        return read()
     if folder_name == '':
         folder_name = '..'
     else:
@@ -26,6 +30,4 @@ def get_yaml(folder_name=''):
     file_name = folder_name + '/config.yaml'
 
 
-
-
-gen()
+# gen()
