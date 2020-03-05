@@ -1,7 +1,3 @@
-Rest:
-  Rest1: 123
-  Rest2: REf
-TTTTT:
-- 123
-- TTTEEE
-test: true
+batch_size: 128
+data_set: zara1
+lr: 0.005
