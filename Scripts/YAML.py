@@ -1,3 +1,4 @@
+import os
 import yaml
 import logging
 
@@ -13,8 +14,8 @@ def gen():
     file.close()
 
 
-def read():
-    file = open('../config.yaml', 'r')
+def read(file_path='config.yaml'):
+    file = open(file_path, 'r')
     data = yaml.load(file, Loader=yaml.SafeLoader)
     logging.info('read complete.')
     return data
@@ -23,11 +24,15 @@ def read():
 def get_yaml(args, folder_name=''):
     if args.train:
         return read()
-    if folder_name == '':
-        folder_name = '..'
-    else:
-        folder_name = '../' + folder_name
+
     file_name = folder_name + '/config.yaml'
+    logging.debug(file_name)
+    if not os.path.exists(file_name):
+        logging.info(f'Directory "{folder_name}" have no config.yaml')
+        file_name = 'config.yaml'
+    logging.debug('file name : ' + file_name)
+    return read(file_name)
+
 
 
 # gen()
