@@ -38,4 +38,5 @@ def set_argparse():
 
 args = set_argparse()
 set_dir(args.id)
-
+config = YAML.get_yaml(args, args.id)
+logging.info(config)
