@@ -22,7 +22,6 @@ def set_dir(folder_name):
         logging.debug('id existed')
 
 
-
 # Set argparse
 def set_argparse():
     parser = argparse.ArgumentParser()
