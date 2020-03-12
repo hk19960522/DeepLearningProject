@@ -13,7 +13,7 @@ class SimpleLSTMEncoder(nn.Module):
         self.num_layers = num_layers
 
         # LSTM and Fully Connected Layer
-        self.nn = nn.LSTM(
+        self.encoder = nn.LSTM(
             input_dim, h_dim, num_layers, dropout=dropout)
         self.fc = nn.Linear(2, input_dim)
 
@@ -29,7 +29,16 @@ class SimpleLSTMEncoder(nn.Module):
         :param obs_traj: Input shape (obs_traj_len, batch, 2)
         :return: shape (num_layers, batch, h_dim)
         '''
-        pass
+        batch_size = obs_traj.size(1)
+        obs_traj_embedding = self.fc(obs_traj.view(-1, 2))
+        obs_traj_embedding = obs_traj_embedding.view(
+            -1, batch_size, self.input_dim
+        )
+
+        hidden_state_tuple = self.init_hidden(batch_size)
+        output, hidden_state = self.encoder(obs_traj_embedding, hidden_state_tuple)
+        final_h = hidden_state[0]
+        return final_h
 
 
 class SimpleLSTMDecoder(nn.Module):

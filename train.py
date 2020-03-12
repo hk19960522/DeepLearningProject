@@ -2,6 +2,7 @@ import argparse
 import logging
 import os
 from scripts import YAML
+from scripts import dataset
 
 # Set the logging config to print info\
 logging.basicConfig(
@@ -37,6 +38,8 @@ def set_argparse():
 
 
 args = set_argparse()
-set_dir(args.id)
+# set_dir(args.id)
 config = YAML.get_yaml(args, args.id)
 logging.info(config)
+
+test_dataset, test_loader = dataset.get_loader('test1', 'test')

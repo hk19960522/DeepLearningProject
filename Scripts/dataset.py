@@ -1,13 +1,52 @@
 import logging
 import os
 import math
+import torch
 from torch.utils import data
 import numpy as np
-import torch
+
+
+def get_loader(name, type):
+    dataset_path = get_dataset_path(name, type)
+    dataset = TrajectoryDataSet(path=dataset_path)
+    loader = data.DataLoader(
+        dataset=dataset,
+        batch_size=3,
+        shuffle=True,
+        collate_fn=data_collate
+    )
+    return dataset, loader
+
+def data_collate(data):
+    (obs_seq_list, pred_seq_list, obs_rel_seq_list, pred_rel_seq_list) = zip(*data)
+
+    _len = [len(seq) for seq in obs_seq_list]
+    cum_start_idx = [0] + np.cumsum(_len).tolist()
+    seq_start_end = [[start, end]
+                     for start, end in zip(cum_start_idx, cum_start_idx[1:])]
+
+    '''
+    format:  seq_len, batch, input_size
+    default: pred/obs len, ped nums, 2(x-y-coord)
+    '''
+    obs_traj = torch.cat(obs_seq_list, dim=0).permute(2, 0, 1)
+    pred_traj = torch.cat(pred_seq_list, dim=0).permute(2, 0, 1)
+    obs_rel_traj = torch.cat(obs_rel_seq_list, dim=0).permute(2, 0, 1)
+    pred_rel_traj = torch.cat(pred_rel_seq_list, dim=0).permute(2, 0, 1)
+
+    seq_start_end = torch.LongTensor(seq_start_end)
+
+    out = [
+        obs_traj, pred_traj,
+        obs_rel_traj, pred_rel_traj,
+        seq_start_end
+    ]
+
+    return tuple(out)
 
 def get_dataset_path(name, type):
-    path = '../datasets/'+name+'/' + type
-    # path = 'datasets/' + name + '/' + type
+    # path = '../datasets/'+name+'/' + type
+    path = 'datasets/' + name + '/' + type
     if not os.path.isdir(path):
         logging.error(f'{path} is not exist...\nend program...')
         exit()
@@ -20,7 +59,7 @@ def read_file(path):
         for line in f:
             d = line.strip().split()
             data.append([float(i) for i in d])
-    print(data)
+    # print(data)
     return np.asarray(data)
 
 
@@ -56,9 +95,12 @@ class TrajectoryDataSet(data.Dataset):
             # check how many sequences in this data
             num_sequences = int(
                 math.ceil((len(frames) - self.sequence_len + 1) / self.skip))
+            '''
+            print(f'Frame nums: {len(frames)}')
             print(num_sequences)
+            '''
             for idx in range(0, num_sequences+1):
-                print(idx)
+                # print(idx)
                 curr_seq_data = np.concatenate(
                     frame_data[idx: idx+self.sequence_len], axis=0)
                 # find all pedestrian in current sequence
@@ -76,6 +118,10 @@ class TrajectoryDataSet(data.Dataset):
                     end_padding = frames.index(curr_ped_seq[-1, 0]) - idx + 1
                     if end_padding - front_padding != self.sequence_len:
                         # current pedestrian don't have enough data
+                        '''
+                        print(f'Not Complete : {end_padding - front_padding}\n'
+                              f'{curr_ped_seq.shape}')
+                        '''
                         continue
 
                     curr_ped_seq = np.transpose(curr_ped_seq[:, 2:])
@@ -93,9 +139,12 @@ class TrajectoryDataSet(data.Dataset):
                     num_peds_in_seq.append(num_peds)
                     all_sequences.append(curr_seq[:num_peds])
                     all_rel_sequences.append(curr_seq_rel[:num_peds])
-                    pass
+
+                '''
+                print(f'Now frame idx: {idx}\n Now ped num in seq: {num_peds}\n'
+                      f'Now seq: {curr_seq[:num_peds]}')
+                '''
                 # print(curr_seq_data)
-                pass
 
         self.num_sequences = len(all_sequences)
         all_sequences = np.concatenate(all_sequences, axis=0)
@@ -116,6 +165,9 @@ class TrajectoryDataSet(data.Dataset):
             (start, end)
             for start, end in zip(cum_start_idx, cum_start_idx[1:])
         ]
+        print(self.num_sequences)
+        print(len(self.seq_start_end))
+        # print(self.obs_traj.shape)
 
     def __getitem__(self, index):
         start, end = self.seq_start_end[index]
@@ -132,5 +184,20 @@ class TrajectoryDataSet(data.Dataset):
         pass
 
 
+# dataset_path = get_dataset_path('test1', 'test')
 dataset_path = get_dataset_path('test1', 'test')
 dataset = TrajectoryDataSet(path=dataset_path)
+loader = data.DataLoader(
+    dataset=dataset,
+    batch_size=3,
+    shuffle=True,
+    collate_fn=data_collate
+)
+
+i = 0
+for idx, d in enumerate(loader):
+    # print(d)
+    [obs_traj, pred_traj, obs_rel_traj, pred_rel_traj, seq_start_end] = d
+    i += 1
+    print(seq_start_end)
+

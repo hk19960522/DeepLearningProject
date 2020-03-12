@@ -22,7 +22,7 @@ def read(file_path='config.yaml'):
 
 
 def get_yaml(args, folder_name=''):
-    if args.train:
+    if args.train or not folder_name:
         return read()
 
     file_name = folder_name + '/config.yaml'
