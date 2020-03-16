@@ -11,7 +11,7 @@ def get_loader(name, type):
     dataset = TrajectoryDataSet(path=dataset_path)
     loader = data.DataLoader(
         dataset=dataset,
-        batch_size=3,
+        batch_size=1,
         shuffle=True,
         collate_fn=data_collate
     )
@@ -135,7 +135,7 @@ class TrajectoryDataSet(data.Dataset):
                     curr_seq_rel[ped_idx, :, front_padding:end_padding] = rel_curr_ped_seq
                     num_peds += 1
 
-                if num_peds > 1:
+                if num_peds >= 1:
                     num_peds_in_seq.append(num_peds)
                     all_sequences.append(curr_seq[:num_peds])
                     all_rel_sequences.append(curr_seq_rel[:num_peds])
