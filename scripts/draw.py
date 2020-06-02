@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import os
+import os8
 import random
 
 
@@ -19,7 +19,7 @@ def draw_graph(filenames):
                             x.append(cnt)
                             cnt += 1
                             delta = real * 0
-                            y.append(real + random.uniform(-delta, delta) + 1.0)
+                            y.append(real)
                     else:
                         x.append(cnt)
                         y.append(float(line))
@@ -41,8 +41,8 @@ def draw_graph(filenames):
 
 
 
-# filenames = ['../result/Err.txt', '../result/F_Err.txt']
-filenames = ['../result/Loss.txt']
+filenames = ['../result/Err.txt', '../result/F_Err.txt']
+# filenames = ['../result/Loss.txt']
 draw_graph(filenames)
 
 '''
