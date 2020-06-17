@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 import random
+import re
 
 
 def draw_graph(filenames):
@@ -39,11 +40,34 @@ def draw_graph(filenames):
     plt.show()
 
 
+def draw_graph_V1(filename, idx_list=[1], name_list=('LOSS')):
+    x_data, y_data = [], []
+    with open(filename, 'r') as f:
+        cnt = 1
+        line = f.readline()
+        while line:
+            data = re.split(',|\n', line)
+            #print(data)
+            x_data.append(cnt)
+            _y = []
+            for i in range(len(idx_list)):
+                _y.append(float(data[idx_list[i]]))
+            y_data.append(_y)
+            #y_data.append(float(data[1]))
+            line = f.readline()
+            cnt += 1
+
+        plots = plt.plot(x_data, y_data)
+        plt.legend(plots, name_list)
+        plt.show()
 
 
+'''
 filenames = ['../result/Err.txt', '../result/F_Err.txt']
 # filenames = ['../result/Loss.txt']
 draw_graph(filenames)
+'''
+
 
 '''
 x = [i for i in range(0, 10)]
@@ -53,4 +77,8 @@ plt.plot(x, y)
 plt.show()
 '''
 
+# filename = '../savedata/0/srlstm/log_curve.txt'
+filename = '../log_curve.txt'
+# draw_graph_V1(filename, [2, 3], ('ADE', 'FDE'))
+draw_graph_V1(filename)
 

@@ -44,10 +44,13 @@ class MakeMLP(nn.Module):
         # append activate function
         if active_fn == 'sig':
             fn = nn.Sigmoid
+            #fn = torch.sigmoid
         elif active_fn == 'relu':
             fn = nn.ReLU
+            #fn = torch.relu
         elif active_fn == 'tanh':
             fn = nn.Tanh
+            #fn = torch.tanh
         if fn is not None:
             layers.append(fn())
 
@@ -145,7 +148,7 @@ class GCN(nn.Module):
 
         # Attention
         self.WAr = MakeMLP(self.args, 1, 'arrR', self.embed_size + self.output_size * 2,
-                           self.hidden_dot_size, 1, self.args.WAr_ac, dropout=0, bias=self.args.ifbias_WAr)
+                           self.dot_size, 1, self.args.WAr_ac, dropout=0, bias=self.args.ifbias_WAr)
 
     def forward (self, corr_index, nei_index, nei_num, lstm_state, W):
         '''
