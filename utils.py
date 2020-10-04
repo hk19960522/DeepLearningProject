@@ -27,23 +27,30 @@ class DataLoader_bytrajec2():
                               ]
             # Data directory where the pre-processed pickle file resides
             self.data_dir = './data'
-            skip=[6,10,10,10,10,10,10,10]
+            skip = [6,10,
+                    10,10,
+                    10,10,
+                    10,10]
 
             if args.ifvalid:
                 self.val_fraction = args.val_fraction
             else:
-                self.val_fraction=0
+                self.val_fraction = 0
 
             train_set=[i for i in range(len(self.data_dirs))]
-            if args.test_set==4 or args.test_set==5:
-                self.test_set=[4,5]
+            if args.test_set == 4 or args.test_set == 5:
+                self.test_set = [4,5]
             else:
-                self.test_set=[self.args.test_set]
+                self.test_set = [self.args.test_set]
 
             for x in self.test_set:
                 train_set.remove(x)
             self.train_dir=[self.data_dirs[x] for x in train_set]
             self.test_dir = [self.data_dirs[x] for x in self.test_set]
+
+            print(f'In utils.py: \n'
+                  f'train dir: {self.train_dir}\n'
+                  f'test dir: {self.test_dir}')
             self.trainskip=[skip[x] for x in train_set]
             self.testskip=[skip[x] for x in self.test_set]
 
@@ -58,7 +65,7 @@ class DataLoader_bytrajec2():
         print("Done.")
 
         # Load the processed data from the pickle file
-        print("Preparing data batches.")
+        print(f'Preparing data batches.')
         if not(os.path.exists(self.train_batch_cache)):
             self.frameped_dict, self.pedtraject_dict = self.load_dict(self.train_data_file)
             self.dataPreprocess('train')
@@ -119,7 +126,10 @@ class DataLoader_bytrajec2():
 
             for ind, pedi in enumerate(Pedlist):
                 if ind%100==0:
-                    print(ind,len(Pedlist))
+                    print(f'utils.py (traject_preprocess):\n' 
+                          f'ind: {ind}, len of Pedlist: {len(Pedlist)}\n'
+                          f'==========================================')
+                    #print(ind,len(Pedlist))
                 # Extract trajectories of one person
                 FrameContainPed = data[:, data[1, :] == pedi]
                 # Extract peds list
@@ -156,6 +166,7 @@ class DataLoader_bytrajec2():
         total_frame = 0
         for seti,dict in enumerate(data_dict):
             frames=sorted(dict)
+            # max frame : total frame - start frame
             maxframe=max(frames)-self.args.seq_length
             frames = [x for x in frames if not x>maxframe]
             total_frame+=len(frames)

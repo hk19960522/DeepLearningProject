@@ -7,7 +7,7 @@ class Processor():
     def __init__(self, args):
         self.args=args
 
-        Dataloader=DataLoader_bytrajec2
+        Dataloader = DataLoader_bytrajec2
 
         self.dataloader = Dataloader(args)
         model = import_class(args.model)

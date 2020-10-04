@@ -215,6 +215,7 @@ if __name__ == '__main__':
         save_arg(p)
     args = load_arg(p)
     torch.cuda.set_device(args.gpu)
+    print(f'GPU: {args.gpu}')
     processor = Processor(args)
     if args.phase == 'test':
         processor.playtest()
